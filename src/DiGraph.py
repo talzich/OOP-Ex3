@@ -3,7 +3,6 @@ from GraphInterface import GraphInterface
 
 class DiGraph(GraphInterface):
 
-
     def __init__(self):
         self.nodes = dict()
         self.edge_size = 0
