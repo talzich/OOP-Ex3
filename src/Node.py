@@ -6,6 +6,8 @@ class Node:
         self.__tag = tag
         self.__weight = weight
         self.__info = info
+        self.__in = dict()
+        self.__out = dict()
 
     def copy(self, other):
         self.__key = other.__key
@@ -13,6 +15,8 @@ class Node:
         self.__tag = other.__tag
         self.__weight = other.__weight
         self.__info = other.__info
+        self.__in = other.__in
+        self.__out = other.__out
 
     def set_weight(self, weight: float):
         self.__weight = weight
@@ -31,6 +35,22 @@ class Node:
 
     def get_info(self):
         return self.__info
+
+    def get_out(self):
+        if self.__out is not None:
+            return list(self.__out.values())
+        else:
+            return None
+
+    def get_in(self):
+        if self.__in is not None:
+            return list(self.__in.values())
+
+    def add_out(self, key, edge):
+        self.__out[key] = edge
+
+    def add_in(self, key, edge):
+        self.__in[key] = edge
 
     def __eq__(self, other):
         """Overrides the default implementation"""
