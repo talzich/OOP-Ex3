@@ -41,7 +41,7 @@ class DiGraph(GraphInterface):
             self.__edge_size += 1
             self.__mc += 1
             return True
-    #
+
     def add_node(self, node_id: int, pos: tuple = None) -> bool:
         if node_id not in self.__nodes:
             new_node = Node(node_id, pos)
@@ -58,12 +58,4 @@ class DiGraph(GraphInterface):
         pass
 
 
-graph = DiGraph()
-graph.add_node(0)
-graph.add_node(1)
-graph.add_node(1)
-graph.add_node(2)
-graph.add_node(3)
 
-graph.add_edge(0, 1, 0.1)
-print()
