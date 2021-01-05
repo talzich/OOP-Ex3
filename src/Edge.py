@@ -39,8 +39,7 @@ class Edge:
         return False
 
     def __str__(self):
-        return 'Src: {self.__src}, Dest: {self.__dest}, Weight: {self.__weight}, Tag: {self.__tag}, Info: {self.__info}'\
-            .format(self=self)
+        return f'Src: {self.__src}, Dest: {self.__dest}, Weight: {self.__weight}, Tag: {self.__tag}, Info: {self.__info}'
 
 
 
