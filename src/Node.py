@@ -38,19 +38,25 @@ class Node:
 
     def get_out(self):
         if self.__out is not None:
-            return list(self.__out.values())
+            return self.__out
         else:
             return None
 
     def get_in(self):
         if self.__in is not None:
-            return list(self.__in.values())
+            return self.__in
 
     def add_out(self, key, edge):
         self.__out[key] = edge
 
     def add_in(self, key, edge):
         self.__in[key] = edge
+
+    def remove_out(self, key):
+        self.__out.pop(key)
+
+    def remove_in(self, key):
+        self.__in.pop(key)
 
     def __eq__(self, other):
         """Overrides the default implementation"""
@@ -71,3 +77,6 @@ class Node:
     def __str__(self):
         return 'Key: {self.__key}, Tag: {self.__tag}, Weight: {self.__weight}, Pos: {self.__pos}, Info: {self.__info}'\
             .format(self=self)
+
+    def __dict__(self):
+        return {'Key': {self.__key}, 'Tag': {self.__tag}, 'Weight': {self.__weight}, 'Pos': {self.__pos}, 'Info': {self.__info}}

@@ -55,7 +55,40 @@ class DiGraph(GraphInterface):
         pass
 
     def remove_edge(self, node_id1: int, node_id2: int) -> bool:
-        pass
+        if node_id1 not in self.__nodes or node_id2 not in self.__nodes:
+            return False
+        src = self.__nodes[node_id1]
+        dest = self.__nodes[node_id2]
+
+        src_outs = src.get_out()
+        dest_ins = dest.get_in()
+
+        if node_id2 not in src_outs:
+            return False
+
+        src.remove_out(node_id2)
+        dest.remove_in(node_id1)
+        self.__edge_size -= 1
+        self.__mc += 1
+        return True
+
+    def __str__(self):
+        return f'Node Size: {self.__node_size}, Edge Size: {self.__edge_size} mc: {self.__mc}'
+
+    def __dict__(self):
+        return {'Node Size': {self.__node_size}, 'Edge Size': {self.__edge_size}, 'mc': {self.__mc}}
 
 
-
+graph = DiGraph()
+graph.add_node(0)
+graph.add_node(1)
+print(graph.__str__())
+print(graph.add_edge(0, 1, 5))
+print(graph.__str__())
+print(graph.add_edge(1, 0, 3))
+print(graph.__str__())
+graph.remove_edge(0, 1)
+graph.remove_edge(1, 0)
+print(graph.__str__())
+graph.remove_edge(1, 0)
+print(graph.__str__())
