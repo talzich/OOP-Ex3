@@ -75,8 +75,4 @@ class Node:
                 return -1
 
     def __str__(self):
-        return 'Key: {self.__key}, Tag: {self.__tag}, Weight: {self.__weight}, Pos: {self.__pos}, Info: {self.__info}'\
-            .format(self=self)
-
-    def __dict__(self):
-        return {'Key': {self.__key}, 'Tag': {self.__tag}, 'Weight': {self.__weight}, 'Pos': {self.__pos}, 'Info': {self.__info}}
+        return f'Key: {self.__key}, Tag: {self.__tag}, Weight: {self.__weight}, Pos: {self.__pos}, Info: {self.__info}'

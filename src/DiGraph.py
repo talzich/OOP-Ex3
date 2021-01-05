@@ -75,17 +75,3 @@ class DiGraph(GraphInterface):
     def __str__(self):
         return f'Node Size: {self.__node_size}, Edge Size: {self.__edge_size} mc: {self.__mc}'
 
-
-graph = DiGraph()
-graph.add_node(0)
-graph.add_node(1)
-print(graph.__str__())
-print(graph.add_edge(0, 1, 5))
-print(graph.__str__())
-print(graph.add_edge(1, 0, 3))
-print(graph.__str__())
-graph.remove_edge(0, 1)
-graph.remove_edge(1, 0)
-print(graph.__str__())
-graph.remove_edge(1, 0)
-print(graph.__str__())
