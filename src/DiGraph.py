@@ -6,7 +6,7 @@ from Edge import Edge
 class DiGraph(GraphInterface):
 
     def __init__(self):
-        self.__nodes = dict()
+        self.nodes = dict()
         self.__edge_size = 0
         self.__node_size = 0
         self.__mc = 0
@@ -21,11 +21,11 @@ class DiGraph(GraphInterface):
         return self.__mc
 
     def add_edge(self, id1: int, id2: int, weight: float) -> bool:
-        if id1 not in self.__nodes or id2 not in self.__nodes:
+        if id1 not in self.nodes or id2 not in self.nodes:
             return False
 
-        src = self.__nodes[id1]
-        dest = self.__nodes[id2]
+        src = self.nodes[id1]
+        dest = self.nodes[id2]
         src_outs = src.get_out()
 
         if id1 == id2:
@@ -43,9 +43,9 @@ class DiGraph(GraphInterface):
             return True
 
     def add_node(self, node_id: int, pos: tuple = None) -> bool:
-        if node_id not in self.__nodes:
+        if node_id not in self.nodes:
             new_node = Node(node_id, pos)
-            self.__nodes[node_id] = new_node
+            self.nodes[node_id] = new_node
             self.__node_size += 1
             self.__mc += 1
             return True
@@ -55,10 +55,10 @@ class DiGraph(GraphInterface):
         pass
 
     def remove_edge(self, node_id1: int, node_id2: int) -> bool:
-        if node_id1 not in self.__nodes or node_id2 not in self.__nodes:
+        if node_id1 not in self.nodes or node_id2 not in self.nodes:
             return False
-        src = self.__nodes[node_id1]
-        dest = self.__nodes[node_id2]
+        src = self.nodes[node_id1]
+        dest = self.nodes[node_id2]
 
         src_outs = src.get_out()
         dest_ins = dest.get_in()
@@ -74,9 +74,6 @@ class DiGraph(GraphInterface):
 
     def __str__(self):
         return f'Node Size: {self.__node_size}, Edge Size: {self.__edge_size} mc: {self.__mc}'
-
-    def __dict__(self):
-        return {'Node Size': {self.__node_size}, 'Edge Size': {self.__edge_size}, 'mc': {self.__mc}}
 
 
 graph = DiGraph()
