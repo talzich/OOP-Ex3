@@ -51,6 +51,14 @@ class DiGraph(GraphInterface):
             return True
         return False
 
+    def add_node_object(self, node:  Node):
+        if node.get_key() not in self.__nodes:
+            self.__nodes[node.get_key()] = node
+            self.__node_size += 1
+            self.__mc += 1
+            return True
+        return False
+
     def remove_node(self, node_id: int) -> bool:
         if node_id not in self.__nodes:
             return False
@@ -86,15 +94,27 @@ class DiGraph(GraphInterface):
         self.__mc += 1
         return True
 
+    def get_v(self):
+        return list(self.__nodes.keys())
+
+    def get_e(self):
+
+        keys = self.get_v()
+        edges = []
+
+        for key in keys:
+            node = self.__nodes[key]
+            outs = list(node.get_out().values())
+            for edge in outs:
+                edges.append(edge)
+
+        return edges
+
+    def get_node(self, key: int):
+        if key < 0 or self.__nodes[key] is None:
+            return None
+        else:
+            return self.__nodes[key]
+
     def __str__(self):
         return f'Node Size: {self.__node_size}, Edge Size: {self.__edge_size} mc: {self.__mc}'
-
-
-graph = DiGraph()
-graph.add_node(0)
-graph.add_node(1)
-graph.add_edge(0, 1, 1)
-print(graph.remove_node(0))
-print(graph.remove_node(1))
-print(graph.remove_node(1))
-print(graph.add_node(0))

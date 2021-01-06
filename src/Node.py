@@ -1,3 +1,4 @@
+import json
 class Node:
 
     def __init__(self, key=-1, pos=None, tag=-1, weight=-1, info=None):
@@ -18,6 +19,8 @@ class Node:
         self.__in = other.__in
         self.__out = other.__out
 
+    def get_key(self):
+        return self.__key
     def set_weight(self, weight: float):
         self.__weight = weight
 
@@ -35,6 +38,9 @@ class Node:
 
     def get_info(self):
         return self.__info
+
+    def get_pos(self):
+        return self.__pos
 
     def get_out(self):
         if self.__out is not None:
@@ -76,3 +82,7 @@ class Node:
 
     def __str__(self):
         return f'Key: {self.__key}, Tag: {self.__tag}, Weight: {self.__weight}, Pos: {self.__pos}, Info: {self.__info}'
+
+    def to_json(self):
+        my_dict = {"key": self.__key, "tag": self.__tag, "weight": self.__weight, "pos": self.__pos, "info": self.__info}
+        return my_dict
