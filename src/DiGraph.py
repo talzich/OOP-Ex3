@@ -59,6 +59,27 @@ class DiGraph(GraphInterface):
             return True
         return False
 
+    def add_edge_object(self, edge: Edge):
+        if edge.get_src() not in self.__nodes or edge.get_dest() not in self.__nodes:
+            return False
+
+        src = self.__nodes[edge.get_src()]
+        dest = self.__nodes[edge.get_dest()]
+        src_outs = src.get_out()
+
+        if src.get_key() == dest.get_key():
+            return False
+
+        elif dest.get_key() in src_outs:
+            return False
+
+        else:
+            src.add_out(dest.get_key(), edge)
+            dest.add_in(src.get_key(), edge)
+            self.__edge_size += 1
+            self.__mc += 1
+            return True
+
     def remove_node(self, node_id: int) -> bool:
         if node_id not in self.__nodes:
             return False
@@ -115,6 +136,12 @@ class DiGraph(GraphInterface):
             return None
         else:
             return self.__nodes[key]
+
+    def clear_graph(self):
+        self.__nodes.clear()
+        self.__edge_size = 0
+        self.__node_size = 0
+        self.__mc = 0
 
     def __str__(self):
         return f'Node Size: {self.__node_size}, Edge Size: {self.__edge_size} mc: {self.__mc}'
