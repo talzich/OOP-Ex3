@@ -1,15 +1,21 @@
+import sys
 from typing import List
 from DiGraph import DiGraph
 from Node import Node
 from Edge import Edge
 from GraphAlgoInterface import GraphAlgoInterface
 import json
+from queue import PriorityQueue
+import math
 
 
 class GraphAlgo(GraphAlgoInterface):
 
     def __init__(self, graph):
         self.graph = graph
+        self.parents = {}
+        self.unvisited = 1
+        self.visited = 0
 
     def load_from_json(self, file_name: str) -> bool:
         if not file_name.endswith(".json"):
@@ -80,7 +86,71 @@ class GraphAlgo(GraphAlgoInterface):
             return False
 
     def shortest_path(self, id1: int, id2: int) -> (float, list):
-        pass
+        src = self.graph.get_node(id1)
+        dest = self.graph.get_node(id2)
+
+        if src is None or dest is None:
+            return (float("inf"), [])
+        elif id1 == id2:
+            return (0, [id1])
+
+        self.set_infinity_weight()
+        self.set_unvisited()
+        self.dijkstra(src)
+
+        if dest.get_weight() == float("inf"):
+            return (float("inf"), [])
+
+        child = id2
+        path = [child]
+
+        while True:
+            father = self.parents[child]
+            path.append(father)
+            if father == id1:
+                break
+            child = father
+
+        path.reverse()
+        return (dest.get_weight(), path)
+
+    def dijkstra(self, src: Node):
+        pq = PriorityQueue()
+
+        src.set_weight(0.0)
+        pq.put((src.get_weight(), src))
+        src.set_tag(self.visited)
+
+        while not pq.empty():
+            cur_pair = pq.get()
+            src = cur_pair[1]
+            src.set_tag(self.visited)
+
+            if src.get_out() is None or not bool(src.get_out()):
+                continue
+
+            for edge in src.get_out().values():
+                dest_node = self.graph.get_node(edge.get_dest())
+                path_weight = src.get_weight() + edge.get_weight()
+
+                if dest_node.get_weight() > path_weight:
+                    dest_node.set_weight(path_weight)
+
+                    self.parents[dest_node.get_key()] = src.get_key()
+
+                if dest_node.get_tag() == self.unvisited:
+                    pq.put((dest_node.get_weight(), dest_node))
+
+    def set_infinity_weight(self):
+        for key in self.graph.get_v():
+            node = self.graph.get_node(key)
+            node.set_weight(float("inf"))
+
+    def set_unvisited(self):
+        for key in self.graph.get_v():
+            node = self.graph.get_node(key)
+            node.set_tag(self.unvisited)
+
 
     def connected_component(self, id1: int) -> list:
         pass
@@ -91,24 +161,63 @@ class GraphAlgo(GraphAlgoInterface):
     def plot_graph(self) -> None:
         pass
 
+    # def shortest_path_dist(self, src: int, dest: int):
+    #     if self.graph is None or self.graph.v_size == 0:
+    #         return -1
+    #
+    #     if src == dest:
+    #         return 0
+    #
+    #     src_node = self.graph.get_node(src)
+    #     dest_node = self.graph.get_node(dest)
+    #
+    #     if src_node is None or dest_node is None:
+    #         return -1
+
 
 graph = DiGraph()
-node0 = Node(0, (1, 2), 1, 5, "black")
-node1 = Node(1, (2, 3), 2, 4.5, "White")
-node2 = Node(2, (3, 4), 4, 1.2, "yellow")
 
-graph.add_node_object(node0)
-graph.add_node_object(node1)
-graph.add_node_object(node2)
+graph.add_node(0)
+graph.add_node(1)
+graph.add_node(2)
+graph.add_node(3)
+graph.add_node(4)
+graph.add_node(5)
+graph.add_node(6)
+graph.add_node(7)
+graph.add_node(8)
 
 graph.add_edge(0, 1, 4)
-graph.add_edge(2, 1, 2)
-graph.add_edge(2, 0, 3)
+graph.add_edge(1, 0, 4)
+graph.add_edge(0, 7, 8)
+graph.add_edge(7, 0, 8)
+graph.add_edge(1, 7, 11)
+graph.add_edge(7, 1, 11)
+graph.add_edge(1, 2, 8)
+graph.add_edge(2, 1, 8)
+graph.add_edge(2, 3, 7)
+graph.add_edge(3, 2, 7)
+graph.add_edge(2, 5, 4)
+graph.add_edge(5, 2, 4)
+graph.add_edge(3, 4, 9)
+graph.add_edge(4, 3, 9)
+graph.add_edge(2, 8, 2)
+graph.add_edge(8, 2, 2)
+graph.add_edge(7, 8, 7)
+graph.add_edge(8, 7, 7)
+graph.add_edge(6, 8, 6)
+graph.add_edge(8, 6, 6)
+graph.add_edge(4, 5, 10)
+graph.add_edge(5, 4, 10)
+graph.add_edge(5, 6, 2)
+graph.add_edge(6, 5, 2)
+graph.add_edge(3, 5, 14)
+graph.add_edge(5, 3, 14)
+graph.add_edge(6, 7, 1)
+graph.add_edge(7, 6, 1)
 
 algo = GraphAlgo(graph)
-print(algo.save_to_json("test.json"))
-
-graph.clear_graph()
-
-print(algo.load_from_json("test.json"))
-print()
+i = 1
+while i <= 8:
+    print(algo.shortest_path(0,i))
+    i += 1
