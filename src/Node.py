@@ -1,6 +1,6 @@
-import json
 class Node:
 
+    # Constructor
     def __init__(self, key=-1, pos=None, tag=-1, weight=-1, info=None):
         self.__key = key
         self.__pos = pos
@@ -10,6 +10,7 @@ class Node:
         self.__in = dict()
         self.__out = dict()
 
+    # Copy constructor
     def copy(self, other):
         self.__key = other.__key
         self.__pos = other.__pos
@@ -19,8 +20,10 @@ class Node:
         self.__in = other.__in
         self.__out = other.__out
 
+    # **********SETTERS & Getters********** #
     def get_key(self):
         return self.__key
+
     def set_weight(self, weight: float):
         self.__weight = weight
 
@@ -52,12 +55,16 @@ class Node:
         if self.__in is not None:
             return self.__in
 
+    # **********SETTERS & Getters********** #
+
+    # Utility - To be used when calling DiGraph's add_edge
     def add_out(self, key, edge):
         self.__out[key] = edge
 
     def add_in(self, key, edge):
         self.__in[key] = edge
 
+    # Utility - To be used when calling DiGraph's remove_edge
     def remove_out(self, key):
         self.__out.pop(key)
 
@@ -84,5 +91,6 @@ class Node:
         return f'Key: {self.__key}, Tag: {self.__tag}, Weight: {self.__weight}, Pos: {self.__pos}, Info: {self.__info}'
 
     def to_json(self):
-        my_dict = {"key": self.__key, "tag": self.__tag, "weight": self.__weight, "pos": self.__pos, "info": self.__info}
+        my_dict = {"key": self.__key, "tag": self.__tag, "weight": self.__weight, "pos": self.__pos,
+                   "info": self.__info}
         return my_dict
