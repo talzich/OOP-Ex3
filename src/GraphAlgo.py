@@ -208,5 +208,6 @@ class GraphAlgo(GraphAlgoInterface):
 
 
 
-
-
+graph = DiGraph()
+algo = GraphAlgo(graph)
+algo.save_to_json("test")
