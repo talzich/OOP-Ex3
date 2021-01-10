@@ -17,8 +17,6 @@ class Node:
         self.__tag = other.__tag
         self.__weight = other.__weight
         self.__info = other.__info
-        self.__in = other.__in
-        self.__out = other.__out
 
     # **********SETTERS & Getters********** #
     def get_key(self):

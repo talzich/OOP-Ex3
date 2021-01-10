@@ -17,6 +17,15 @@ class GraphAlgo(GraphAlgoInterface):
         self.unvisited = 1
         self.visited = 0
 
+        # A list of lists. Looks like:
+        # [
+        #    [node0, node2]
+        #    [node1, node3]
+        #    [node4, node5]
+        #  ]
+
+        self.SCC = []
+
     # Loading a json file to the underlying graph this instance is working on
     def load_from_json(self, file_name: str) -> bool:
 
@@ -198,16 +207,115 @@ class GraphAlgo(GraphAlgoInterface):
             node.set_tag(self.unvisited)
 
     def connected_component(self, id1: int) -> list:
-        pass
+        src = self.graph.get_node(id1)
+        if self.graph is None or src is None:
+            return []
+        for i in self.SCC:
+            if id1 in i:
+                return i
 
     def connected_components(self) -> List[list]:
-        pass
+        self.kosaraju()
+        return self.SCC
 
     def plot_graph(self) -> None:
         pass
 
+    def reverse_graph(self):
+        reversed_graph = DiGraph()
+        for key in self.graph.get_v():
+            node = self.graph.get_node(key)
+            new_node = Node()
+            new_node.copy(node)
+            new_node.set_tag(self.unvisited)
+            reversed_graph.add_node_object(new_node)
 
+        for edge in self.graph.get_e():
+            reversed_graph.add_edge(edge.get_dest(), edge.get_src(), edge.get_weight())
 
-graph = DiGraph()
-algo = GraphAlgo(graph)
-algo.save_to_json("test")
+        return reversed_graph
+
+    def fill_util(self, edges: list, dfs_stack, k_stack):
+        for edge in edges:
+            curr_child = self.graph.get_node(edge.get_dest())
+            if curr_child.get_tag() is self.unvisited:
+                curr_child.set_tag(self.visited)
+                dfs_stack.append(curr_child.get_key())
+                return
+        k_stack.append(dfs_stack.pop())
+
+    def dfs_fill(self, k_stack: list, dfs_stack: list, node: Node):
+
+        dfs_stack.append(node.get_key())
+
+        while dfs_stack:
+            last = len(dfs_stack) - 1
+            node = self.graph.get_node(dfs_stack[last])
+
+            if (not node.get_out()) or node.get_out() is None:
+                k_stack.append(dfs_stack.pop())
+                continue
+
+            edges = list(node.get_out().values())
+            self.fill_util(edges, dfs_stack, k_stack)
+
+    def empty_util(self, edges: list, comp: list, dfs_stack: list, graph_t: DiGraph):
+
+        for edge in edges:
+            curr_child = graph_t.get_node(edge.get_dest())
+            if curr_child.get_tag() is self.unvisited:
+                curr_child.set_tag(self.visited)
+                dfs_stack.append(curr_child.get_key())
+                comp.append(curr_child.get_key())
+                return
+        dfs_stack.pop()
+
+    def dfs_empty(self, dfs_stack: list, graph_t: DiGraph, curr_key: int):
+        node = graph_t.get_node(curr_key)
+
+        if node.get_tag() is self.unvisited:
+            node.set_tag(self.visited)
+
+            comp = list()
+            comp.append(node.get_key())
+
+            dfs_stack.append(node.get_key())
+
+            while dfs_stack:
+                last = len(dfs_stack) - 1
+                node = graph_t.get_node(dfs_stack[last])
+
+                if (not node.get_out()) or node.get_out() is None:
+                    dfs_stack.pop()
+                    continue
+
+                edges = list(node.get_out().values())
+                self.empty_util(edges, comp, dfs_stack, graph_t)
+            return comp
+        return None
+
+    def kosaraju(self):
+
+        if self.graph is None:
+            return []
+
+        # This stack will keep track of which nodes finished exploring
+        k_stack = list()
+
+        # This stack will manage the way we explore our graph and will maintain a DFS approach
+        dfs_stack = list()
+
+        self.set_unvisited()
+
+        for key in self.graph.get_v():
+            node = self.graph.get_node(key)
+            if node.get_tag() == self.unvisited:
+                node.set_tag(self.visited)
+                self.dfs_fill(k_stack, dfs_stack, node)
+
+                reversed_graph = self.reverse_graph()
+
+                while k_stack:
+                    comp = self.dfs_empty(dfs_stack, reversed_graph, k_stack.pop())
+                    if comp is not None:
+                        self.SCC.append(comp)
