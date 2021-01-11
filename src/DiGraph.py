@@ -11,6 +11,33 @@ class DiGraph(GraphInterface):
         self.__node_size = 0
         self.__mc = 0
 
+    def get_all_v(self) -> dict:
+        return self.__nodes
+
+    def all_in_edges_of_node(self, id1: int) -> dict:
+        node = self.__nodes[id1]
+        if node is None:
+            return None
+
+        in_edges = {}
+
+        for in_key in node.get_in():
+            in_edges[in_key] = node.get_in()[in_key].get_weight()
+
+        return in_edges
+
+    def all_out_edges_of_node(self, id1: int) -> dict:
+        node = self.__nodes[id1]
+        if node is None:
+            return None
+
+        out_edges = {}
+
+        for out_key in node.get_out():
+            out_edges[out_key] = node.get_out()[out_key].get_weight()
+
+        return out_edges
+
     # Returns number of vertices in this graph
     def v_size(self) -> int:
         return self.__node_size
@@ -188,7 +215,7 @@ class DiGraph(GraphInterface):
         self.__mc = 0
 
     # A simple to string method
-    def __str__(self):
+    def __repr__(self):
         return f'Node Size: {self.__node_size}, Edge Size: {self.__edge_size} mc: {self.__mc}'
 
     def get_positions(self):
