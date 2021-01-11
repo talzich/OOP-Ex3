@@ -43,6 +43,11 @@ class Node:
     def get_pos(self):
         return self.__pos
 
+    def set_pos(self, pos: tuple):
+        if pos is not tuple:
+            raise TypeError("Position must be of type tuple")
+        self.__pos = pos
+
     def get_out(self):
         if self.__out is not None:
             return self.__out
