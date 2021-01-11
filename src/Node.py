@@ -90,10 +90,12 @@ class Node:
             else:
                 return -1
 
-    def __str__(self):
+    def __repr__(self):
         return f'Key: {self.__key}, Tag: {self.__tag}, Weight: {self.__weight}, Pos: {self.__pos}, Info: {self.__info}'
 
     def to_json(self):
-        my_dict = {"key": self.__key, "tag": self.__tag, "weight": self.__weight, "pos": self.__pos,
-                   "info": self.__info}
+        my_x = str(self.__pos[0])
+        my_y = str(self.__pos[1])
+        my_pos = my_x + "," + my_y
+        my_dict = {"pos": my_pos, "id": self.__key}
         return my_dict
