@@ -5,16 +5,16 @@ from Edge import Edge
 from GraphAlgoInterface import GraphAlgoInterface
 from queue import PriorityQueue
 import json
-import matplotlib.pyplot as plt
 import numpy as np
 import random
+import matplotlib.pyplot as plt
 
 
 
 
 class GraphAlgo(GraphAlgoInterface):
 
-    def __init__(self, graph):
+    def __init__(self, graph = None):
         self.graph = graph
         self.parents = {}
         self.unvisited = 1
@@ -331,26 +331,34 @@ class GraphAlgo(GraphAlgoInterface):
 
         # Constant values
         node_color = "#BDA3FA"  # Kinda purple
-        rand_node_color = "#F5B1AE"  # Kinda orange
 
         # data would be a dictionary in which key is a node's key and value is a node's position
         data = self.graph.get_positions()
 
+        # If there is a node with no position
         if None in data.values():
             self.set_randoms(data)
 
+        x_val = []
+        y_val = []
 
+        for point in data.values():
+            x_val.append(point[0])
+            y_val.append(point[1])
 
+        fig, ax = plt.subplots()
+        ax.scatter(x_val, y_val)
 
+        for item in data:
+            ax.annotate(item, data[item])
 
-
-
-
+        plt.scatter(x_val, y_val, c=node_color)
 
     def plot_edges(self):
         pass
 
-    def set_randoms(self, data: dict):
+    @staticmethod
+    def set_randoms(data: dict):
 
         x_comp = list()
         y_comp = list()
@@ -362,22 +370,36 @@ class GraphAlgo(GraphAlgoInterface):
                 x_comp.append(point[0])
                 y_comp.append(point[1])
 
-        min_x = min(x_comp)
-        min_y = min(y_comp)
+        if len(x_comp) < 2:
+            for item in data:
 
-        max_x = max(x_comp)
-        max_y = max(y_comp)
+                if data[item] is None:
+                    rand_x = random.randrange(-10, 10)
+                    rand_y = random.randrange(-10, 10)
+                    rand_point = (rand_x, rand_y)
 
-        for item in data:
+                    if rand_point in data.values():
+                        rand_point = (rand_x * 1.1, rand_y * 1.1)
 
-            if data[item] is None:
-                rand_x = random.randrange(min_x, max_x)
-                rand_y = random.randrange(min_y, max_y)
-                rand_point = (rand_x, rand_y)
+                    data[item] = rand_point
 
-                if rand_point in data.values():
-                    rand_point = (rand_x*1.1, rand_y*1.1)
+        else:
+            min_x = min(x_comp)
+            min_y = min(y_comp)
 
-                data[item] = rand_point
+            max_x = max(x_comp)
+            max_y = max(y_comp)
+
+            for item in data:
+
+                if data[item] is None:
+                    rand_x = random.randrange(min_x, max_x)
+                    rand_y = random.randrange(min_y, max_y)
+                    rand_point = (rand_x, rand_y)
+
+                    if rand_point in data.values():
+                        rand_point = (rand_x*1.1, rand_y*1.1)
+
+                    data[item] = rand_point
 
     # ********** Utility Methods ********** #
