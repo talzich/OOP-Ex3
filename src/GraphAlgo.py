@@ -29,18 +29,24 @@ class GraphAlgo(GraphAlgoInterface):
 
         self.SCC = []
 
+    def get_graph(self):
+        return self.graph
+
     # Loading a json file to the underlying graph this instance is working on
     def load_from_json(self, file_name: str) -> bool:
 
-        if not file_name.endswith(".json"):
-
-            # If file has no extension at all
-            if "." not in file_name:
-                file_name += ".json"
-
-            # If file has extension different from .json
-            else:
-                return False
+        # if not file_name.endswith(".json"):
+        #
+        #     # If file has no extension at all
+        #     if "." not in file_name:
+        #         file_name += ".json"
+        #
+        #     elif file_name.startswith("."):
+        #         file_name += ".json"
+        #
+        #     # If file has extension different from .json
+        #     else:
+        #         return False
 
         # We need a clean graph to load into
         if self.graph is not None:
@@ -60,7 +66,11 @@ class GraphAlgo(GraphAlgoInterface):
             # Load all the nodes to the graph
             for node in nodes:
                 if 'pos' in node:
-                    new_node = Node(key=node["id"], pos=node["pos"])
+                    str_pos = node['pos']
+                    pos = str_pos.split(',')
+                    x = float(pos[0])
+                    y = float(pos[1])
+                    new_node = Node(key=node["id"], pos=(x,y))
                 else:
                     new_node = Node(key=node['id'])
                 self.graph.add_node_object(new_node)
