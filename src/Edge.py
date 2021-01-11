@@ -38,11 +38,11 @@ class Edge:
                    self.__tag == other.__tag and self.__info == other.__info
         return False
 
-    def __str__(self):
+    def __repr__(self):
         return f'Src: {self.__src}, Dest: {self.__dest}, Weight: {self.__weight}, Tag: {self.__tag}, Info: {self.__info}'
 
     def to_json(self):
-        my_dict = {"src": self.__src, "dest": self.__dest, "weight": self.__weight, "tag": self.__tag, "info": self.__info}
+        my_dict = {"src": self.__src, "w": self.__weight, "dest": self.__dest}
         return my_dict
 
 
