@@ -332,75 +332,52 @@ class GraphAlgo(GraphAlgoInterface):
         # Constant values
         node_color = "#BDA3FA"  # Kinda purple
         rand_node_color = "#F5B1AE"  # Kinda orange
-        node_shape = "o"
-        node_area = 100.0
 
         # data would be a dictionary in which key is a node's key and value is a node's position
         data = self.graph.get_positions()
-        points = list(data.values())
-        keys = list(data.keys())
-        rand_indices = list()
-        rand_points = list()
 
-        x_vals = list()
-        y_vals = list()
+        if None in data.values():
+            self.set_randoms(data)
 
-        for i, point in enumerate(points):
-            # If a node has no position, add its key to the rand_indices list for later
-            if point is not None:
-                x_vals.append(point[0])
-                y_vals.append(point[1])
-            else:
-                rand_indices.append(i)
 
-        self.random_positions(x_vals, y_vals, rand_indices, rand_points)
 
-        # Adding annotations with each node's key
-        fig, ax = plt.subplots()
-        ax.scatter(x_vals, y_vals)
 
-        for i, txt in enumerate(keys):
-            key_x_pos = x_vals[i] - 0.04
-            key_y_pos = y_vals[i] - 0.055
-            ax.annotate(keys[i], (key_x_pos, key_y_pos))
 
-        # Scattering the shapes for non-random points
-        plt.scatter(x_vals, y_vals, node_area, node_color, node_shape)
-        plt.scatter(rand_points, node_area, rand_node_color, node_shape)
+
+
+
 
     def plot_edges(self):
         pass
 
-    def random_positions(self, x_vals, y_vals, keys, rand_points):
+    def set_randoms(self, data: dict):
 
-        x_compare = list()
-        y_compare = list()
+        x_comp = list()
+        y_comp = list()
 
-        for x in x_vals:
-            if x is not None:
-                x_compare.append(x)
+        points = list(data.values())
 
-        for y in y_vals:
-            if y is not None:
-                y_compare.append(y)
+        for point in points:
+            if point is not None:
+                x_comp.append(point[0])
+                y_comp.append(point[1])
 
-        min_x = min(x_compare)
-        min_y = min(y_compare)
+        min_x = min(x_comp)
+        min_y = min(y_comp)
 
-        max_x = max(x_compare)
-        max_y = max(y_compare)
+        max_x = max(x_comp)
+        max_y = max(y_comp)
 
-        for key in keys:
+        for item in data:
 
-            rand_x = random.randrange(min_x, max_x)
-            rand_y = random.randrange(min_y, max_y)
-
-            while rand_x in x_vals:
+            if data[item] is None:
                 rand_x = random.randrange(min_x, max_x)
-
-            while rand_y in y_vals:
                 rand_y = random.randrange(min_y, max_y)
+                rand_point = (rand_x, rand_y)
 
-            rand_points.append((rand_x, rand_y))
+                if rand_point in data.values():
+                    rand_point = (rand_x*1.1, rand_y*1.1)
+
+                data[item] = rand_point
 
     # ********** Utility Methods ********** #
