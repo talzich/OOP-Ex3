@@ -44,7 +44,7 @@ class Node:
         return self.__pos
 
     def set_pos(self, pos: tuple):
-        if pos is not tuple:
+        if not isinstance(pos, tuple):
             raise TypeError("Position must be of type tuple")
         self.__pos = pos
 

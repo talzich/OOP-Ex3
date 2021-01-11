@@ -1,12 +1,15 @@
-import sys
 from typing import List
 from DiGraph import DiGraph
 from Node import Node
 from Edge import Edge
 from GraphAlgoInterface import GraphAlgoInterface
-import json
 from queue import PriorityQueue
-import math
+import json
+import matplotlib.pyplot as plt
+import numpy as np
+import random
+
+
 
 
 class GraphAlgo(GraphAlgoInterface):
@@ -219,8 +222,12 @@ class GraphAlgo(GraphAlgoInterface):
         return self.SCC
 
     def plot_graph(self) -> None:
-        pass
+        self.plot_nodes()
+        self.plot_edges()
+        plt.show()
+        return None
 
+    # ********** Utility Methods ********** #
     def reverse_graph(self):
         reversed_graph = DiGraph()
         for key in self.graph.get_v():
@@ -319,3 +326,74 @@ class GraphAlgo(GraphAlgoInterface):
                     comp = self.dfs_empty(dfs_stack, reversed_graph, k_stack.pop())
                     if comp is not None:
                         self.SCC.append(comp)
+
+    def plot_nodes(self):
+
+        # Constant values
+        node_color = "#BDA3FA"  # Kinda purple
+        rand_node_color = "#F5B1AE"  # Kinda orange
+        node_shape = "o"
+        node_area = 250.0
+
+        # data would be a dictionary in which key is a node's key and value is a node's position
+        data = self.graph.get_positions()
+        points = list(data.values())
+        keys = list(data.keys())
+        rand_points = list()
+
+        x_vals = list()
+        y_vals = list()
+
+        for i, point in enumerate(points):
+            # If a node has no position, add its key to the rand_points list for later
+            if point is not None:
+                x_vals.append(point[0])
+                y_vals.append(point[1])
+            else:
+                rand_points.append(i)
+                x_vals.append(None)
+                y_vals.append(None)
+
+        self.random_positions(x_vals, y_vals, rand_points)
+
+        # Adding annotations with each node's key
+        fig, ax = plt.subplots()
+        ax.scatter(x_vals, y_vals)
+        for i, txt in enumerate(keys):
+            key_x_pos = x_vals[i] - 0.04
+            key_y_pos = y_vals[i] - 0.055
+            ax.annotate(keys[i], (key_x_pos, key_y_pos))
+
+        # Scattering the shapes for non-random points
+        plt.scatter(x_vals, y_vals, node_area, node_color, node_shape)
+
+    def plot_edges(self):
+        pass
+
+    def random_positions(self, x_vals, y_vals, keys):
+
+        x_compare = list()
+        y_compare = list()
+
+        for x in x_vals:
+            if x is not None:
+                x_compare.append(x)
+
+        for y in y_vals:
+            if y is not None:
+                y_compare.append(y)
+
+        min_x = min(x_compare)
+        min_y = min(y_compare)
+
+        max_x = max(x_compare)
+        max_y = max(y_compare)
+
+        for key in keys:
+            rand_x = random.randrange(min_x, max_x)
+            rand_y = random.randrange(min_y, max_y)
+
+            x_vals[key] = rand_x
+            y_vals[key] = rand_y
+
+    # ********** Utility Methods ********** #
