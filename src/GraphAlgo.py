@@ -54,17 +54,20 @@ class GraphAlgo(GraphAlgoInterface):
             json_obj_graph = json.load(json_file)
 
             # Lists of nodes and edges
-            nodes = json_obj_graph["nodes"]
-            edges = json_obj_graph["edges"]
+            nodes = json_obj_graph["Nodes"]
+            edges = json_obj_graph["Edges"]
 
             # Load all the nodes to the graph
             for node in nodes:
-                new_node = Node(node["key"], tuple(node["pos"]), node["tag"], node["weight"], node["info"])
+                if 'pos' in node:
+                    new_node = Node(key=node["id"], pos=node["pos"])
+                else:
+                    new_node = Node(key=node['id'])
                 self.graph.add_node_object(new_node)
 
             # Connect the relevant nodes
             for edge in edges:
-                new_edge = Edge(edge["src"], edge["dest"], edge["weight"], edge["tag"], edge["info"])
+                new_edge = Edge(src=edge["src"], dest=edge["dest"],weight=edge["w"])
                 self.graph.add_edge_object(new_edge)
 
             return True
@@ -101,16 +104,14 @@ class GraphAlgo(GraphAlgoInterface):
                 nodes_json.append(node.to_json())
 
             # Adding the nodes list to the dictionary
-            graph_json["nodes"] = nodes_json
+            graph_json["Nodes"] = nodes_json
 
             # Adding edges to edges list
             for edge in edges:
                 edges_json.append(edge.to_json())
 
             # Adding all the data to the dictionary
-            graph_json["edges"] = edges_json
-            graph_json["node size"] = self.graph.v_size()
-            graph_json["edge size"] = self.graph.e_size()
+            graph_json["Edges"] = edges_json
 
             # Dump the dictionary into a json file format
             json.dump(graph_json, file)
