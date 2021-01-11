@@ -333,32 +333,32 @@ class GraphAlgo(GraphAlgoInterface):
         node_color = "#BDA3FA"  # Kinda purple
         rand_node_color = "#F5B1AE"  # Kinda orange
         node_shape = "o"
-        node_area = 250.0
+        node_area = 100.0
 
         # data would be a dictionary in which key is a node's key and value is a node's position
         data = self.graph.get_positions()
         points = list(data.values())
         keys = list(data.keys())
+        rand_indices = list()
         rand_points = list()
 
         x_vals = list()
         y_vals = list()
 
         for i, point in enumerate(points):
-            # If a node has no position, add its key to the rand_points list for later
+            # If a node has no position, add its key to the rand_indices list for later
             if point is not None:
                 x_vals.append(point[0])
                 y_vals.append(point[1])
             else:
-                rand_points.append(i)
-                x_vals.append(None)
-                y_vals.append(None)
+                rand_indices.append(i)
 
-        self.random_positions(x_vals, y_vals, rand_points)
+        self.random_positions(x_vals, y_vals, rand_indices, rand_points)
 
         # Adding annotations with each node's key
         fig, ax = plt.subplots()
         ax.scatter(x_vals, y_vals)
+
         for i, txt in enumerate(keys):
             key_x_pos = x_vals[i] - 0.04
             key_y_pos = y_vals[i] - 0.055
@@ -366,11 +366,12 @@ class GraphAlgo(GraphAlgoInterface):
 
         # Scattering the shapes for non-random points
         plt.scatter(x_vals, y_vals, node_area, node_color, node_shape)
+        plt.scatter(rand_points, node_area, rand_node_color, node_shape)
 
     def plot_edges(self):
         pass
 
-    def random_positions(self, x_vals, y_vals, keys):
+    def random_positions(self, x_vals, y_vals, keys, rand_points):
 
         x_compare = list()
         y_compare = list()
@@ -390,10 +391,16 @@ class GraphAlgo(GraphAlgoInterface):
         max_y = max(y_compare)
 
         for key in keys:
+
             rand_x = random.randrange(min_x, max_x)
             rand_y = random.randrange(min_y, max_y)
 
-            x_vals[key] = rand_x
-            y_vals[key] = rand_y
+            while rand_x in x_vals:
+                rand_x = random.randrange(min_x, max_x)
+
+            while rand_y in y_vals:
+                rand_y = random.randrange(min_y, max_y)
+
+            rand_points.append((rand_x, rand_y))
 
     # ********** Utility Methods ********** #
