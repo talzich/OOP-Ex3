@@ -355,35 +355,25 @@ class GraphAlgo(GraphAlgoInterface):
         fig, ax = plt.subplots()
         ax.scatter(x_val, y_val)
 
+        arrow = {}
+
         for item in data:
             ax.annotate(item, data[item])
 
         self.set_boundaries(data)
-
-        min_point = self.__boundaries[0]
-        max_point = self.__boundaries[1]
-
-        height = max_point[1]-min_point[1]
-        width = max_point[0]-min_point[0]
-
         plt.scatter(x_val, y_val, color=node_color, s=75)
 
     def plot_edges(self):
 
-        min_point = self.__boundaries[0]
-        max_point = self.__boundaries[1]
-
-        fig_height = max_point[1] - min_point[1]
-        fig_width = max_point[0] - min_point[0]
-
         edges = self.__graph.get_e()
         for edge in edges:
-            src = self.__graph.get_node(edge.get_src())
             dest = self.__graph.get_node(edge.get_dest())
+            src = self.__graph.get_node(edge.get_src())
             dest_pos = dest.get_pos()
             src_pos = src.get_pos()
-            diff = (dest_pos[0]-src_pos[0], dest_pos[1]-src_pos[1])
-            plt.arrow(src.get_pos()[0], src.get_pos()[1], diff[0]*0.9999, diff[1]*0.9999)
+            txt = "{:.2f}".format(edge.get_weight())
+            plt.annotate(text=" ", xy=dest_pos, xytext=src_pos,
+                         arrowprops=dict(facecolor='k', width=0.5, headwidth=3))
 
     def set_randoms(self, data: dict):
 
