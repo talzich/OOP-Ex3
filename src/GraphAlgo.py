@@ -10,27 +10,18 @@ import random
 import matplotlib.pyplot as plt
 
 
-
-
 class GraphAlgo(GraphAlgoInterface):
 
-    def __init__(self, graph = None):
-        self.graph = graph
-        self.parents = {}
-        self.unvisited = 1
-        self.visited = 0
-
-        # A list of lists. Looks like:
-        # [
-        #    [node0, node2]
-        #    [node1, node3]
-        #    [node4, node5]
-        #  ]
-
-        self.SCC = []
+    def __init__(self, graph=None):
+        self.__graph = graph
+        self.__parents = {}
+        self.__unvisited = 1
+        self.__visited = 0
+        self.__SCC = []
+        self.__boundaries = []
 
     def get_graph(self):
-        return self.graph
+        return self.__graph
 
     # Loading a json file to the underlying graph this instance is working on
     def load_from_json(self, file_name: str) -> bool:
@@ -49,10 +40,10 @@ class GraphAlgo(GraphAlgoInterface):
         #         return False
 
         # We need a clean graph to load into
-        if self.graph is not None:
-            self.graph.clear_graph()
+        if self.__graph is not None:
+            self.__graph.clear_graph()
         else:
-            self.graph = DiGraph()
+            self.__graph = DiGraph()
 
         try:
 
@@ -70,15 +61,15 @@ class GraphAlgo(GraphAlgoInterface):
                     pos = str_pos.split(',')
                     x = float(pos[0])
                     y = float(pos[1])
-                    new_node = Node(key=node["id"], pos=(x,y))
+                    new_node = Node(key=node["id"], pos=(x, y))
                 else:
                     new_node = Node(key=node['id'])
-                self.graph.add_node_object(new_node)
+                self.__graph.add_node_object(new_node)
 
             # Connect the relevant nodes
             for edge in edges:
-                new_edge = Edge(src=edge["src"], dest=edge["dest"],weight=edge["w"])
-                self.graph.add_edge_object(new_edge)
+                new_edge = Edge(src=edge["src"], dest=edge["dest"], weight=edge["w"])
+                self.__graph.add_edge_object(new_edge)
 
             return True
 
@@ -102,15 +93,15 @@ class GraphAlgo(GraphAlgoInterface):
         graph_json = {}
         nodes_json = []
         edges_json = []
-        keys = self.graph.get_v()
-        edges = self.graph.get_e()
+        keys = self.__graph.get_v()
+        edges = self.__graph.get_e()
 
         try:
             file = open(file_name, "w")
 
             # Adding nodes to the nodes list
             for key in keys:
-                node = self.graph.get_node(key)
+                node = self.__graph.get_node(key)
                 nodes_json.append(node.to_json())
 
             # Adding the nodes list to the dictionary
@@ -135,8 +126,8 @@ class GraphAlgo(GraphAlgoInterface):
     def shortest_path(self, id1: int, id2: int) -> (float, list):
 
         # Objects of type Node
-        src = self.graph.get_node(id1)
-        dest = self.graph.get_node(id2)
+        src = self.__graph.get_node(id1)
+        dest = self.__graph.get_node(id2)
 
         if src is None or dest is None:
             return (float("inf"), [])
@@ -161,7 +152,7 @@ class GraphAlgo(GraphAlgoInterface):
 
         # Filling the list with the shortest path from dest to src
         while True:
-            father = self.parents[child]
+            father = self.__parents[child]
             path.append(father)
             if father == id1:
                 break
@@ -181,7 +172,7 @@ class GraphAlgo(GraphAlgoInterface):
         src.set_weight(0.0)
 
         pq.put((src.get_weight(), src))
-        src.set_tag(self.visited)
+        src.set_tag(self.__visited)
 
         # While there are still nodes to explore
         while not pq.empty():
@@ -189,7 +180,7 @@ class GraphAlgo(GraphAlgoInterface):
             cur_pair = pq.get()
 
             src = cur_pair[1]
-            src.set_tag(self.visited)
+            src.set_tag(self.__visited)
 
             # If current node has no outgoing edges
             if src.get_out() is None or not bool(src.get_out()):
@@ -197,40 +188,43 @@ class GraphAlgo(GraphAlgoInterface):
 
             # If we find a "cheaper" path, we should replace the relevant variables
             for edge in src.get_out().values():
-                dest_node = self.graph.get_node(edge.get_dest())
+                dest_node = self.__graph.get_node(edge.get_dest())
                 path_weight = src.get_weight() + edge.get_weight()
 
                 if dest_node.get_weight() > path_weight:
                     dest_node.set_weight(path_weight)
 
-                    self.parents[dest_node.get_key()] = src.get_key()
+                    self.__parents[dest_node.get_key()] = src.get_key()
 
-                if dest_node.get_tag() == self.unvisited:
+                if dest_node.get_tag() == self.__unvisited:
                     pq.put((dest_node.get_weight(), dest_node))
 
     # Utility - Sets all nodes' weights to float("inf")
     def set_infinity_weight(self):
-        for key in self.graph.get_v():
-            node = self.graph.get_node(key)
+        for key in self.__graph.get_v():
+            node = self.__graph.get_node(key)
             node.set_weight(float("inf"))
 
     # Utility - Sets all nodes' tags to unvisited
     def set_unvisited(self):
-        for key in self.graph.get_v():
-            node = self.graph.get_node(key)
-            node.set_tag(self.unvisited)
+        for key in self.__graph.get_v():
+            node = self.__graph.get_node(key)
+            node.set_tag(self.__unvisited)
 
     def connected_component(self, id1: int) -> list:
-        src = self.graph.get_node(id1)
-        if self.graph is None or src is None:
+        if not self.__SCC:
+            self.connected_components()
+
+        src = self.__graph.get_node(id1)
+        if self.__graph is None or src is None:
             return []
-        for i in self.SCC:
+        for i in self.__SCC:
             if id1 in i:
                 return i
 
     def connected_components(self) -> List[list]:
         self.kosaraju()
-        return self.SCC
+        return self.__SCC
 
     def plot_graph(self) -> None:
         self.plot_nodes()
@@ -239,25 +233,26 @@ class GraphAlgo(GraphAlgoInterface):
         return None
 
     # ********** Utility Methods ********** #
+
     def reverse_graph(self):
         reversed_graph = DiGraph()
-        for key in self.graph.get_v():
-            node = self.graph.get_node(key)
+        for key in self.__graph.get_v():
+            node = self.__graph.get_node(key)
             new_node = Node()
             new_node.copy(node)
-            new_node.set_tag(self.unvisited)
+            new_node.set_tag(self.__unvisited)
             reversed_graph.add_node_object(new_node)
 
-        for edge in self.graph.get_e():
+        for edge in self.__graph.get_e():
             reversed_graph.add_edge(edge.get_dest(), edge.get_src(), edge.get_weight())
 
         return reversed_graph
 
     def fill_util(self, edges: list, dfs_stack, k_stack):
         for edge in edges:
-            curr_child = self.graph.get_node(edge.get_dest())
-            if curr_child.get_tag() is self.unvisited:
-                curr_child.set_tag(self.visited)
+            curr_child = self.__graph.get_node(edge.get_dest())
+            if curr_child.get_tag() is self.__unvisited:
+                curr_child.set_tag(self.__visited)
                 dfs_stack.append(curr_child.get_key())
                 return
         k_stack.append(dfs_stack.pop())
@@ -268,7 +263,7 @@ class GraphAlgo(GraphAlgoInterface):
 
         while dfs_stack:
             last = len(dfs_stack) - 1
-            node = self.graph.get_node(dfs_stack[last])
+            node = self.__graph.get_node(dfs_stack[last])
 
             if (not node.get_out()) or node.get_out() is None:
                 k_stack.append(dfs_stack.pop())
@@ -281,8 +276,8 @@ class GraphAlgo(GraphAlgoInterface):
 
         for edge in edges:
             curr_child = graph_t.get_node(edge.get_dest())
-            if curr_child.get_tag() is self.unvisited:
-                curr_child.set_tag(self.visited)
+            if curr_child.get_tag() is self.__unvisited:
+                curr_child.set_tag(self.__visited)
                 dfs_stack.append(curr_child.get_key())
                 comp.append(curr_child.get_key())
                 return
@@ -291,8 +286,8 @@ class GraphAlgo(GraphAlgoInterface):
     def dfs_empty(self, dfs_stack: list, graph_t: DiGraph, curr_key: int):
         node = graph_t.get_node(curr_key)
 
-        if node.get_tag() is self.unvisited:
-            node.set_tag(self.visited)
+        if node.get_tag() is self.__unvisited:
+            node.set_tag(self.__visited)
 
             comp = list()
             comp.append(node.get_key())
@@ -314,7 +309,7 @@ class GraphAlgo(GraphAlgoInterface):
 
     def kosaraju(self):
 
-        if self.graph is None:
+        if self.__graph is None:
             return []
 
         # This stack will keep track of which nodes finished exploring
@@ -325,10 +320,10 @@ class GraphAlgo(GraphAlgoInterface):
 
         self.set_unvisited()
 
-        for key in self.graph.get_v():
-            node = self.graph.get_node(key)
-            if node.get_tag() == self.unvisited:
-                node.set_tag(self.visited)
+        for key in self.__graph.get_v():
+            node = self.__graph.get_node(key)
+            if node.get_tag() == self.__unvisited:
+                node.set_tag(self.__visited)
                 self.dfs_fill(k_stack, dfs_stack, node)
 
                 reversed_graph = self.reverse_graph()
@@ -336,7 +331,7 @@ class GraphAlgo(GraphAlgoInterface):
                 while k_stack:
                     comp = self.dfs_empty(dfs_stack, reversed_graph, k_stack.pop())
                     if comp is not None:
-                        self.SCC.append(comp)
+                        self.__SCC.append(comp)
 
     def plot_nodes(self):
 
@@ -344,7 +339,7 @@ class GraphAlgo(GraphAlgoInterface):
         node_color = "#BDA3FA"  # Kinda purple
 
         # data would be a dictionary in which key is a node's key and value is a node's position
-        data = self.graph.get_positions()
+        data = self.__graph.get_positions()
 
         # If there is a node with no position
         if None in data.values():
@@ -363,17 +358,37 @@ class GraphAlgo(GraphAlgoInterface):
         for item in data:
             ax.annotate(item, data[item])
 
-        plt.scatter(x_val, y_val, c=node_color)
+        self.set_boundaries(data)
+
+        min_point = self.__boundaries[0]
+        max_point = self.__boundaries[1]
+
+        height = max_point[1]-min_point[1]
+        width = max_point[0]-min_point[0]
+
+        plt.scatter(x_val, y_val, color=node_color, s=75)
 
     def plot_edges(self):
-        pass
 
-    @staticmethod
-    def set_randoms(data: dict):
+        min_point = self.__boundaries[0]
+        max_point = self.__boundaries[1]
+
+        fig_height = max_point[1] - min_point[1]
+        fig_width = max_point[0] - min_point[0]
+
+        edges = self.__graph.get_e()
+        for edge in edges:
+            src = self.__graph.get_node(edge.get_src())
+            dest = self.__graph.get_node(edge.get_dest())
+            dest_pos = dest.get_pos()
+            src_pos = src.get_pos()
+            diff = (dest_pos[0]-src_pos[0], dest_pos[1]-src_pos[1])
+            plt.arrow(src.get_pos()[0], src.get_pos()[1], diff[0]*0.9999, diff[1]*0.9999)
+
+    def set_randoms(self, data: dict):
 
         x_comp = list()
         y_comp = list()
-
         points = list(data.values())
 
         for point in points:
@@ -393,6 +408,7 @@ class GraphAlgo(GraphAlgoInterface):
                         rand_point = (rand_x * 1.1, rand_y * 1.1)
 
                     data[item] = rand_point
+                    self.__graph.get_node(item).set_pos(rand_point)
 
         else:
             min_x = min(x_comp)
@@ -409,8 +425,35 @@ class GraphAlgo(GraphAlgoInterface):
                     rand_point = (rand_x, rand_y)
 
                     if rand_point in data.values():
-                        rand_point = (rand_x*1.1, rand_y*1.1)
+                        rand_point = (rand_x * 1.1, rand_y * 1.1)
 
                     data[item] = rand_point
+                    self.__graph.get_node(item).set_pos(rand_point)
 
+            max_point = (max_x, max_y)
+            min_point = (min_x, min_y)
+
+            self.__boundaries[0] = min_point
+            self.__boundaries[1] = max_point
+
+    def set_boundaries(self, data):
+
+        x_comp = list()
+        y_comp = list()
+        points = list(data.values())
+
+        for point in points:
+            x_comp.append(point[0])
+            y_comp.append(point[1])
+
+        min_x = min(x_comp)
+        min_y = min(y_comp)
+
+        max_x = max(x_comp)
+        max_y = max(y_comp)
+
+        min_point = (min_x, min_y)
+        max_point = (max_x, max_y)
+
+        self.__boundaries = [min_point, max_point]
     # ********** Utility Methods ********** #
