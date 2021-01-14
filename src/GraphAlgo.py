@@ -5,9 +5,10 @@ from Edge import Edge
 from GraphAlgoInterface import GraphAlgoInterface
 from queue import PriorityQueue
 import json
-import numpy as np
 import random
 import matplotlib.pyplot as plt
+import time
+import timeit
 
 
 class GraphAlgo(GraphAlgoInterface):
@@ -20,24 +21,14 @@ class GraphAlgo(GraphAlgoInterface):
         self.__SCC = []
         self.__boundaries = []
 
+        if graph is not None:
+            self.__mc = self.__graph.get_mc()
+
     def get_graph(self):
         return self.__graph
 
     # Loading a json file to the underlying graph this instance is working on
     def load_from_json(self, file_name: str) -> bool:
-
-        # if not file_name.endswith(".json"):
-        #
-        #     # If file has no extension at all
-        #     if "." not in file_name:
-        #         file_name += ".json"
-        #
-        #     elif file_name.startswith("."):
-        #         file_name += ".json"
-        #
-        #     # If file has extension different from .json
-        #     else:
-        #         return False
 
         # We need a clean graph to load into
         if self.__graph is not None:
@@ -71,6 +62,7 @@ class GraphAlgo(GraphAlgoInterface):
                 new_edge = Edge(src=edge["src"], dest=edge["dest"], weight=edge["w"])
                 self.__graph.add_edge_object(new_edge)
 
+            self.__mc = self.__graph.get_mc()
             return True
 
         except IOError as e:
@@ -312,6 +304,10 @@ class GraphAlgo(GraphAlgoInterface):
         if self.__graph is None:
             return []
 
+        if self.__SCC and self.__mc == self.__graph.get_mc():
+            return
+
+        self.__mc = self.__graph.get_mc()
         # This stack will keep track of which nodes finished exploring
         k_stack = list()
 
@@ -326,12 +322,12 @@ class GraphAlgo(GraphAlgoInterface):
                 node.set_tag(self.__visited)
                 self.dfs_fill(k_stack, dfs_stack, node)
 
-                reversed_graph = self.reverse_graph()
+        reversed_graph = self.reverse_graph()
 
-                while k_stack:
-                    comp = self.dfs_empty(dfs_stack, reversed_graph, k_stack.pop())
-                    if comp is not None:
-                        self.__SCC.append(comp)
+        while k_stack:
+            comp = self.dfs_empty(dfs_stack, reversed_graph, k_stack.pop())
+            if comp is not None:
+                self.__SCC.append(comp)
 
     def plot_nodes(self):
 
@@ -371,7 +367,6 @@ class GraphAlgo(GraphAlgoInterface):
             src = self.__graph.get_node(edge.get_src())
             dest_pos = dest.get_pos()
             src_pos = src.get_pos()
-            txt = "{:.2f}".format(edge.get_weight())
             plt.annotate(text=" ", xy=dest_pos, xytext=src_pos,
                          arrowprops=dict(facecolor='k', width=0.5, headwidth=3))
 
