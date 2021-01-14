@@ -451,4 +451,5 @@ class GraphAlgo(GraphAlgoInterface):
         max_point = (max_x, max_y)
 
         self.__boundaries = [min_point, max_point]
+
     # ********** Utility Methods ********** #

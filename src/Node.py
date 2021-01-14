@@ -103,8 +103,11 @@ class Node:
         return f'Key: {self.__key}, Tag: {self.__tag}, Weight: {self.__weight}, Pos: {self.__pos}, Info: {self.__info}'
 
     def to_json(self):
+        if self.__pos is None:
+            return {"id": self.__key}
         my_x = str(self.__pos[0])
         my_y = str(self.__pos[1])
         my_pos = my_x + "," + my_y
         my_dict = {"pos": my_pos, "id": self.__key}
         return my_dict
+
