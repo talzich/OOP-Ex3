@@ -128,6 +128,9 @@ class GraphAlgo(GraphAlgoInterface):
         elif id1 == id2:
             return (0, [id1])
 
+        if src.get_path(id2) and self.__mc == self.__graph.get_mc():
+            return src.get_path(id2)
+
         # Setting up for dijkstra
         self.set_infinity_weight()
         self.set_unvisited()
