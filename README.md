@@ -29,7 +29,8 @@ This repository documents the implementation of two python interfaces
 
  #### Kosaraju's Algorithm
 We implemented Kosaraju's algorithm using DFS algorithms and a stack to keep track of our explored nodes.
-We used the [following video] (https://www.youtube.com/watch?v=RpgcYiky7uw&ab_channel=TusharRoy-CodingMadeSimple) to help wrap our heads around the algorithm and design an implementation.
+We used the following video to help wrap our heads around the algorithm and design an implementation.
+https://www.youtube.com/watch?v=RpgcYiky7uw&ab_channel=TusharRoy-CodingMadeSimple
 
 
 
