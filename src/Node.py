@@ -9,6 +9,7 @@ class Node:
         self.__info = info
         self.__in = dict()
         self.__out = dict()
+        self.__path = dict()
 
     # Copy constructor
     def copy(self, other):
@@ -73,6 +74,13 @@ class Node:
 
     def remove_in(self, key):
         self.__in.pop(key)
+
+    # Utility - To be used when calling GraphAlgo's shortest_path
+    def set_path(self, key: int, path: tuple):
+        self.__path[key] = path
+
+    def get_path(self, key: int):
+        return self.__path[key]
 
     def __eq__(self, other):
         """Overrides the default implementation"""
