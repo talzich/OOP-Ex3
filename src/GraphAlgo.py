@@ -22,7 +22,8 @@ class GraphAlgo(GraphAlgoInterface):
         self.__boundaries = []
 
         if graph is not None:
-            self.__mc = self.__graph.get_mc()
+            self.__mc_scc = self.__graph.get_mc()
+            self.__mc_sp = self.__graph.get_mc()
 
     def get_graph(self):
         return self.__graph
@@ -62,7 +63,7 @@ class GraphAlgo(GraphAlgoInterface):
                 new_edge = Edge(src=edge["src"], dest=edge["dest"], weight=edge["w"])
                 self.__graph.add_edge_object(new_edge)
 
-            self.__mc = self.__graph.get_mc()
+            self.__mc_scc = self.__graph.get_mc()
             return True
 
         except IOError as e:
@@ -128,8 +129,12 @@ class GraphAlgo(GraphAlgoInterface):
         elif id1 == id2:
             return (0, [id1])
 
-        if src.get_path(id2) and self.__mc == self.__graph.get_mc():
+        # If algorithm already ran for this pair and nothing in the graph had changes since, we can return
+        # the correct answer from node's attribute
+        if src.get_path(id2) and self.__mc_sp == self.__graph.get_mc():
             return src.get_path(id2)
+
+        self.__mc_sp == self.__graph.get_mc()
 
         # Setting up for dijkstra
         self.set_infinity_weight()
@@ -156,6 +161,7 @@ class GraphAlgo(GraphAlgoInterface):
         # Reversing the list
         path.reverse()
 
+        src.set_path(id2, (dest.get_weight, path))
         return dest.get_weight(), path
 
     # This method is a python implementation of dijkstra's algorithm
@@ -307,10 +313,10 @@ class GraphAlgo(GraphAlgoInterface):
         if self.__graph is None:
             return []
 
-        if self.__SCC and self.__mc == self.__graph.get_mc():
+        if self.__SCC and self.__mc_scc == self.__graph.get_mc():
             return
 
-        self.__mc = self.__graph.get_mc()
+        self.__mc_scc = self.__graph.get_mc()
         # This stack will keep track of which nodes finished exploring
         k_stack = list()
 
