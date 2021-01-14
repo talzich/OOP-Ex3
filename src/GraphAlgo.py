@@ -64,6 +64,7 @@ class GraphAlgo(GraphAlgoInterface):
                 self.__graph.add_edge_object(new_edge)
 
             self.__mc_scc = self.__graph.get_mc()
+            self.__mc_sp = self.__graph.get_mc()
             return True
 
         except IOError as e:
@@ -161,7 +162,7 @@ class GraphAlgo(GraphAlgoInterface):
         # Reversing the list
         path.reverse()
 
-        src.set_path(id2, (dest.get_weight, path))
+        src.set_path(id2, dest.get_weight(), path)
         return dest.get_weight(), path
 
     # This method is a python implementation of dijkstra's algorithm

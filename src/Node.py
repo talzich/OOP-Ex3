@@ -76,11 +76,12 @@ class Node:
         self.__in.pop(key)
 
     # Utility - To be used when calling GraphAlgo's shortest_path
-    def set_path(self, key: int, path: tuple):
-        self.__path[key] = path
+    def set_path(self, key: int, weight: float, path: list):
+        self.__path[key] = weight, path
 
     def get_path(self, key: int):
-        return self.__path[key]
+        if self.__path:
+            return self.__path[key]
 
     def __eq__(self, other):
         """Overrides the default implementation"""
