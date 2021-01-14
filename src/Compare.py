@@ -68,20 +68,20 @@ def compare_shortest_path(g_algo: GraphAlgo, laps):
 
 if __name__ == '__main__':
 
-    graph = "../Graphs_on_circle/G_10000_80000_1.json"
+    graph = "../Graphs_random_pos/G_30000_240000_2.json"
     algo = GraphAlgo()
     algo1 = GraphAlgo()
     algo2 = GraphAlgo()
 
-    # algo.load_from_json(graph)
-    # print("\n********** Start of Testing SCC **********\n")
-    # print('\n', compare_scc(algo, 10), '\n')
-    # print("********** End of Testing SCC **********\n\n")
-    #
-    # algo1.load_from_json(graph)
-    # print("********** Start of Testing SCC's **********\n")
-    # print('\n', compare_sccs(algo1, 10), '\n')
-    # print("********** End of Testing SCC's **********\n\n")
+    algo.load_from_json(graph)
+    print("\n********** Start of Testing SCC **********\n")
+    print('\n', compare_scc(algo, 10), '\n')
+    print("********** End of Testing SCC **********\n\n")
+
+    algo1.load_from_json(graph)
+    print("********** Start of Testing SCC's **********\n")
+    print('\n', compare_sccs(algo1, 10), '\n')
+    print("********** End of Testing SCC's **********\n\n")
 
     algo2.load_from_json(graph)
     print("********** Start of Testing Shortest Path **********\n")
